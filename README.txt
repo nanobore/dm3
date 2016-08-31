@@ -1,7 +1,8 @@
+THIS IS PROBABLY BROKEN FOR AWHILE--making it Python3 compatible. <nanobore@gmail.com>
+
 #######################
 ## Python DM3 Reader ##
 #######################
-
 
 Author: 
 Pierre-Ivan Raynal <raynal@univ-tours.fr>
