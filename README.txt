@@ -9,7 +9,6 @@ Pierre-Ivan Raynal <raynal@univ-tours.fr>
 
 Contributions by:
 Philippe Mallet-Ladeira <philippe.mallet@cemes.fr>
-<nanobore@gmail.com>
 
 This Python module is a transposition and adaptation of the DM3_Reader ImageJ plug-in (http://rsb.info.nih.gov/ij/plugins/DM3_Reader.html) by Greg Jefferis <jefferis@stanford.edu>.
 
