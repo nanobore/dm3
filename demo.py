@@ -4,7 +4,7 @@ import os.path
 import argparse
 
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 from PIL import Image
 
@@ -39,8 +39,8 @@ filename = os.path.split(filepath)[1]
 fileref = os.path.splitext(filename)[0]
 
 # pyplot interactive mode
-plt.ion()
-plt.close('all')
+#plt.ion()
+#plt.close('all')
 
 # parse DM3 file
 dm3f = dm3.DM3(filepath, debug=debug)
@@ -117,4 +117,3 @@ if args.convert:
     im_dsp = Image.fromarray(aa_norm)
     im_dsp.save(os.path.join(savedir,fileref+'.png'))
     im_dsp.save(os.path.join(savedir,fileref+'.jpg'))
-

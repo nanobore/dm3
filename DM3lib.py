@@ -51,6 +51,7 @@ def ar2imfile(filename, array_):
 def readLong(f):
     """Read 4 bytes as integer in file f"""
     read_bytes = f.read(4)
+    #print(struct.unpack('>l', read_bytes)[0])
     return struct.unpack('>l', read_bytes)[0]
 
 def readShort(f):
@@ -71,13 +72,16 @@ def readBool(f):
 def readChar(f):
     """Read 1 byte as char in file f"""
     read_bytes = f.read(1)
-    return struct.unpack('c', read_bytes)[0]
+    #print(struct.unpack('c', read_bytes)[0].decode('latin-1'))
+    return struct.unpack('c', read_bytes)[0].decode('latin-1')
 
 def readString(f, len_=1):
     """Read len_ bytes as a string in file f"""
     read_bytes = f.read(len_)
     str_fmt = '>'+str(len_)+'s'
-    return struct.unpack( str_fmt, read_bytes )[0]
+    #print(type(read_bytes), read_bytes)
+    #print('struct', struct.unpack( str_fmt, read_bytes )[0])
+    return struct.unpack( str_fmt, read_bytes )[0].decode('latin-1')
 
 def readLEShort(f):
     """Read 2 bytes as *little endian* integer in file f"""
@@ -193,23 +197,24 @@ class DM3(object):
 
     ## utility functions
     def _makeGroupString(self):
-        tString = self._curGroupAtLevelX[0]
+        tString = str(self._curGroupAtLevelX[0])
         for i in range( 1, self._curGroupLevel+1 ):
-            tString += '.' + self._curGroupAtLevelX[i]
-        return tString
+            tString += '.' + str(self._curGroupAtLevelX[i])
+        #print(type(tString), tString)
+        return str(tString)
 
     def _makeGroupNameString(self):
         tString = self._curGroupNameAtLevelX[0]
         for i in range( 1, self._curGroupLevel+1 ):
             tString += '.' + str( self._curGroupNameAtLevelX[i] )
-        return tString
+        return str(tString)
 
     def _readTagGroup(self):
         # go down a level
         self._curGroupLevel += 1
         # increment group counter
         self._curGroupAtLevelX[self._curGroupLevel] += 1
-        # set number of current tag to -1 
+        # set number of current tag to -1
         # --- readTagEntry() pre-increments => first gets 0
         self._curTagAtLevelX[self._curGroupLevel] = -1
         if ( debugLevel > 5):
@@ -239,7 +244,9 @@ class DM3(object):
         # get tag label if exists
         lenTagLabel = readShort(self._f)
         if ( lenTagLabel != 0 ):
+            #tagLabel = readString(self._f, lenTagLabel).decode('latin-1')
             tagLabel = readString(self._f, lenTagLabel)
+            #print('tagLabel from _readTagEntry', tagLabel)
         else:
             tagLabel = str( self._curTagAtLevelX[self._curGroupLevel] )
         if ( debugLevel > 5):
@@ -249,13 +256,15 @@ class DM3(object):
             print(str(self._curGroupLevel)+": Tag label = "+tagLabel)
         if isData:
             # give it a name
-            self._curTagName = self._makeGroupNameString()+"."+tagLabel
+            self._curTagName = self._makeGroupNameString()+"."+str(tagLabel)
+            #print('hey', self._curTagName)
             # read it
             self._readTagType()
         else:
             # it is a tag group
-            self._curGroupNameAtLevelX[self._curGroupLevel+1] = tagLabel
+            self._curGroupNameAtLevelX[self._curGroupLevel+1] = str(tagLabel)
             self._readTagGroup()  # increments curGroupLevel
+
         return 1
 
     def _readTagType(self):
@@ -298,6 +307,7 @@ class DM3(object):
         if ( etSize > 0 ):
             self._storeTag( self._curTagName,
                             self._readNativeData(encodedType, etSize) )
+            #print(self._curTagName)
         elif ( encodedType == STRING ):
             stringSize = readLong(self._f)
             self._readStringData(stringSize)
@@ -320,7 +330,7 @@ class DM3(object):
         if encodedType in readFunc:
             val = readFunc[encodedType](self._f)
         else:
-            raise Exception("rND, " + hex(self._f.tell()) 
+            raise Exception("rND, " + hex(self._f.tell())
                             + ": Unknown data type " + str(encodedType))
         if ( debugLevel > 3 ):
             print("rND, " + hex(self._f.tell()) + ": " + str(val))
@@ -337,12 +347,16 @@ class DM3(object):
                 print("rSD @ " + str(self._f.tell()) + "/" + hex(self._f.tell()) +" :", end=' ')
             ## !!! *Unicode* string (UTF-16)... convert to Python unicode str
             rString = readString(self._f, stringSize)
-            rString = str(rString, "utf_16_le")
+            #rString = str(rString, "utf_16_le")
             if ( debugLevel > 3 ):
                 print(rString + "   <"  + repr( rString ) + ">")
         if ( debugLevel > 0 ):
             print("StringVal:", rString)
         self._storeTag( self._curTagName, rString )
+        #print(self._curTagName, rString)
+        # string data, looks OK here
+        #print(type(rString), rString)
+        #print(rString)
         return rString
 
     def _readArrayTypes(self):
@@ -363,7 +377,7 @@ class DM3(object):
         arraySize = readLong(self._f)
 
         if ( debugLevel > 3 ):
-            print("rArD, " + hex( self._f.tell() ) + ":", end=' ') 
+            print("rArD, " + hex( self._f.tell() ) + ":", end=' ')
             print("Reading array of size = " + str(arraySize))
 
         itemSize = 0
@@ -419,7 +433,7 @@ class DM3(object):
         for i in range( nFields ):
             nameLength = readLong(self._f)
             if ( debugLevel > 9 ):
-                print(i + "th namelength = " + nameLength)
+                print(str(i) + "th namelength = " + str(nameLength))
             fieldType = readLong(self._f)
             fieldTypes.append( fieldType )
 
@@ -432,7 +446,7 @@ class DM3(object):
             etSize = self._encodedTypeSize(encodedType)
 
             if ( debugLevel > 5 ):
-                print("Tag Type = " + str(encodedType) + ",", end=' ') 
+                print("Tag Type = " + str(encodedType) + ",", end=' ')
                 print("Tag Size = " + str(etSize))
 
             # get data
@@ -445,9 +459,13 @@ class DM3(object):
         #     => can then be easily converted to any encoding
         # - /!\ tag names may not be ascii char only
         #       (e.g. '\xb5', i.e. MICRO SIGN)
-        tagName = str(tagName, 'latin-1')
+        #tagName = str(tagName, 'latin-1')
+
+        #tagName = str(tagName.strip())
+        #print(type(tagName), tagName)
         # - convert tag value to unicode if not already unicode object
         #   (as for string data)
+        print(tagName, tagValue)
         tagValue = str(tagValue)
         # store Tags as list and dict
         self._storedTags.append( tagName + " = " + tagValue )
@@ -493,7 +511,7 @@ class DM3(object):
             isDM3 = False
         # check file header, raise Exception if not DM3
         if not isDM3:
-            raise Exception("%s does not appear to be a DM3 file." 
+            raise Exception("%s does not appear to be a DM3 file."
                             % os.path.split(self._filename)[1])
         elif self.debug > 0:
             print("%s appears to be a DM3 file" % (self._filename))
@@ -535,11 +553,11 @@ class DM3(object):
     def tags(self):
         """Returns all image Tags."""
         return self._tagDict
- 
+
     def dumpTags(self, dump_dir='/tmp'):
         """Dumps image Tags in a txt file."""
         dump_file = os.path.join(dump_dir,
-                                 os.path.split(self._filename)[1] 
+                                 os.path.split(self._filename)[1]
                                  + ".tagdump.txt")
         try:
             dumpf = open( dump_file, 'w' )
@@ -574,10 +592,11 @@ class DM3(object):
             if tag_name in self.tags:
                 # tags supplied as Python unicode str; convert to chosen charset
                 # (typically latin-1 or utf-8)
-                infoDict[key] = self.tags[tag_name].encode(self._outputcharset)
+                #infoDict[key] = self.tags[tag_name].encode(self._outputcharset)
+                infoDict[key] = self.tags[tag_name].encode('utf-8')
         # return experiment information
         return infoDict
- 
+
 
     @property
     def thumbnail(self):
@@ -596,13 +615,13 @@ class DM3(object):
             print("Notice: tn size: %sx%s px" % (tn_width, tn_height))
 
         if (tn_width*tn_height*4) != tn_size:
-            raise Exception("Cannot extract thumbnail from %s" 
+            raise Exception("Cannot extract thumbnail from %s"
                             % os.path.split(self._filename)[1])
         else:
             self._f.seek( tn_offset )
             rawdata = self._f.read(tn_size)
             # - read as 16-bit LE unsigned integer
-            tn = Image.fromstring( 'F', (tn_width, tn_height), rawdata, 
+            tn = Image.fromstring( 'F', (tn_width, tn_height), rawdata,
                                    'raw', 'F;32' )
             # - rescale and convert px data
             tn = tn.point(lambda x: x * (1./65536) + 0)
@@ -619,7 +638,7 @@ class DM3(object):
         """Save thumbnail as PNG file."""
         # - cleanup name
         if tn_file == '':
-            tn_path = os.path.join('./', 
+            tn_path = os.path.join('./',
                                    os.path.split(self.filename)[1]+'.tn.png')
         else:
             if os.path.splitext(tn_file)[1] != '.png':
@@ -709,7 +728,7 @@ class DM3(object):
         high = int(float(self.tags["%s.ImageDisplayInfo.HighLimit" % tag_root]))
         cuts = (low, high)
         return cuts
-    
+
     @property
     def cuts(self):
         """Returns display range (cuts)."""
@@ -736,4 +755,3 @@ class DM3(object):
 ## MAIN ##
 if __name__ == '__main__':
     print("DM3lib %s" % VERSION)
-
