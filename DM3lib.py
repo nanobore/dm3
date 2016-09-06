@@ -12,6 +12,9 @@
 ## --
 ## Python adaptation: Pierre-Ivan Raynal <raynal@univ-tours.fr>
 ## http://microscopies.med.univ-tours.fr/
+##
+## Python 3 port: Nano Bore <nanobore@gmail.com>
+## http://nanobore.wordpress.com
 ################################################################################
 
 import os
@@ -51,7 +54,6 @@ def ar2imfile(filename, array_):
 def readLong(f):
     """Read 4 bytes as integer in file f"""
     read_bytes = f.read(4)
-    #print(struct.unpack('>l', read_bytes)[0])
     return struct.unpack('>l', read_bytes)[0]
 
 def readShort(f):
@@ -72,14 +74,13 @@ def readBool(f):
 def readChar(f):
     """Read 1 byte as char in file f"""
     read_bytes = f.read(1)
-    #print(struct.unpack('c', read_bytes)[0].decode('latin-1'))
     return struct.unpack('c', read_bytes)[0].decode('latin-1')
 
 def readString(f, len_=1):
     """Read len_ bytes as a string in file f"""
     read_bytes = f.read(len_)
     str_fmt = '>' + str(len_) + 's'
-    #print('struct', struct.unpack( str_fmt, read_bytes )[0].decode('latin-1', 'ignore').replace('\x00', ''))
+    # The .replace('\x00', '') is a hack, but it works? Fix this later once I understand this better
     return struct.unpack( str_fmt, read_bytes )[0].decode('latin-1', 'ignore').replace('\x00', '')
 
 def readLEShort(f):
@@ -199,7 +200,6 @@ class DM3(object):
         tString = str(self._curGroupAtLevelX[0])
         for i in range( 1, self._curGroupLevel+1 ):
             tString += '.' + str(self._curGroupAtLevelX[i])
-        #print(type(tString), tString)
         return str(tString)
 
     def _makeGroupNameString(self):
@@ -243,9 +243,7 @@ class DM3(object):
         # get tag label if exists
         lenTagLabel = readShort(self._f)
         if ( lenTagLabel != 0 ):
-            #tagLabel = readString(self._f, lenTagLabel).decode('latin-1')
             tagLabel = readString(self._f, lenTagLabel)
-            #print('tagLabel from _readTagEntry', tagLabel)
         else:
             tagLabel = str( self._curTagAtLevelX[self._curGroupLevel] )
         if ( debugLevel > 5):
@@ -256,7 +254,6 @@ class DM3(object):
         if isData:
             # give it a name
             self._curTagName = self._makeGroupNameString()+"."+str(tagLabel)
-            #print('hey', self._curTagName)
             # read it
             self._readTagType()
         else:
@@ -306,7 +303,6 @@ class DM3(object):
         if ( etSize > 0 ):
             self._storeTag( self._curTagName,
                             self._readNativeData(encodedType, etSize) )
-            #print(self._curTagName)
         elif ( encodedType == STRING ):
             stringSize = readLong(self._f)
             self._readStringData(stringSize)
@@ -346,18 +342,11 @@ class DM3(object):
                 print("rSD @ " + str(self._f.tell()) + "/" + hex(self._f.tell()) +" :", end=' ')
             ## !!! *Unicode* string (UTF-16)... convert to Python unicode str
             rString = readString(self._f, stringSize)
-            #rString = str(rString, "utf_16_le")
             if ( debugLevel > 3 ):
                 print(rString + "   <"  + repr( rString ) + ">")
         if ( debugLevel > 0 ):
             print("StringVal:", rString)
         self._storeTag( self._curTagName, rString )
-        #print(type(rString), rString)
-        #print(rString, type(rString))
-        #print(self._curTagName, rString)
-        # string data, looks OK here
-        #print(type(rString), rString)
-        #print(rString)
         return rString
 
     def _readArrayTypes(self):
@@ -467,11 +456,7 @@ class DM3(object):
         # - convert tag value to unicode if not already unicode object
         #   (as for string data)
 
-        # bna
-        #print(tagName, tagValue, type(tagValue))
         tagValue = str(tagValue)
-        # tagValue = tagValue.encode()
-        #print(tagName, tagValue, type(tagValue))
         # store Tags as list and dict
         self._storedTags.append( tagName + " = " + tagValue )
         self._tagDict[tagName] = tagValue
@@ -598,8 +583,6 @@ class DM3(object):
             if tag_name in self.tags:
                 # tags supplied as Python unicode str; convert to chosen charset
                 # (typically latin-1 or utf-8)
-                #infoDict[key] = self.tags[tag_name].encode(self._outputcharset)
-                #infoDict[key] = self.tags[tag_name].encode('utf-8')
                 infoDict[key] = self.tags[tag_name]
         # return experiment information
         return infoDict
@@ -701,8 +684,6 @@ class DM3(object):
                 t1 = time.time()
             self._f.seek( data_offset )
             rawdata = self._f.read(data_size)
-            #im = Image.fromstring( 'F', (im_width, im_height), rawdata,
-                           #        'raw', decoder )
             im = Image.frombytes('F', (im_width, im_height), rawdata,
                                   'raw', decoder)
             if self.debug > 0:
@@ -755,7 +736,6 @@ class DM3(object):
         if unit == '\xb5m':
             unit = 'micron'
         else:
-            #unit = unit.encode('ascii')
             unit = unit
         if self.debug > 0:
             print("pixel size = %s %s" % (pixel_size, unit))
