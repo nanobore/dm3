@@ -603,7 +603,7 @@ class DM3(object):
             self._f.seek( tn_offset )
             rawdata = self._f.read(tn_size)
             # - read as 16-bit LE unsigned integer
-            tn = Image.fromstring( 'F', (tn_width, tn_height), rawdata,
+            tn = Image.frombytes( 'F', (tn_width, tn_height), rawdata,
                                    'raw', 'F;32' )
             # - rescale and convert px data
             tn = tn.point(lambda x: x * (1./65536) + 0)
@@ -676,7 +676,7 @@ class DM3(object):
                 t1 = time.time()
             self._f.seek( data_offset )
             rawdata = self._f.read(data_size)
-            im = Image.fromstring( 'F', (im_width, im_height), rawdata,
+            im = Image.frombytes( 'F', (im_width, im_height), rawdata,
                                    'raw', decoder )
             if self.debug > 0:
                 t2 = time.time()

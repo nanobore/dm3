@@ -78,10 +78,9 @@ def readChar(f):
 def readString(f, len_=1):
     """Read len_ bytes as a string in file f"""
     read_bytes = f.read(len_)
-    str_fmt = '>'+str(len_)+'s'
-    #print(type(read_bytes), read_bytes)
-    #print('struct', struct.unpack( str_fmt, read_bytes )[0])
-    return struct.unpack( str_fmt, read_bytes )[0].decode('latin-1')
+    str_fmt = '>' + str(len_) + 's'
+    #print('struct', struct.unpack( str_fmt, read_bytes )[0].decode('latin-1', 'ignore').replace('\x00', ''))
+    return struct.unpack( str_fmt, read_bytes )[0].decode('latin-1', 'ignore').replace('\x00', '')
 
 def readLEShort(f):
     """Read 2 bytes as *little endian* integer in file f"""
@@ -353,6 +352,8 @@ class DM3(object):
         if ( debugLevel > 0 ):
             print("StringVal:", rString)
         self._storeTag( self._curTagName, rString )
+        #print(type(rString), rString)
+        #print(rString, type(rString))
         #print(self._curTagName, rString)
         # string data, looks OK here
         #print(type(rString), rString)
@@ -465,8 +466,12 @@ class DM3(object):
         #print(type(tagName), tagName)
         # - convert tag value to unicode if not already unicode object
         #   (as for string data)
-        print(tagName, tagValue)
+
+        # bna
+        #print(tagName, tagValue, type(tagValue))
         tagValue = str(tagValue)
+        # tagValue = tagValue.encode()
+        #print(tagName, tagValue, type(tagValue))
         # store Tags as list and dict
         self._storedTags.append( tagName + " = " + tagValue )
         self._tagDict[tagName] = tagValue
@@ -572,6 +577,7 @@ class DM3(object):
     def info(self):
         """Extracts useful experiment info from DM3 file."""
         # define useful information
+        # root.ImageList.1.ImageTags.Microscope Info.Name
         tag_root = 'root.ImageList.1'
         info_keys = {
             'descrip': "%s.Description" % tag_root,
@@ -593,7 +599,8 @@ class DM3(object):
                 # tags supplied as Python unicode str; convert to chosen charset
                 # (typically latin-1 or utf-8)
                 #infoDict[key] = self.tags[tag_name].encode(self._outputcharset)
-                infoDict[key] = self.tags[tag_name].encode('utf-8')
+                #infoDict[key] = self.tags[tag_name].encode('utf-8')
+                infoDict[key] = self.tags[tag_name]
         # return experiment information
         return infoDict
 
@@ -694,8 +701,10 @@ class DM3(object):
                 t1 = time.time()
             self._f.seek( data_offset )
             rawdata = self._f.read(data_size)
-            im = Image.fromstring( 'F', (im_width, im_height), rawdata,
-                                   'raw', decoder )
+            #im = Image.fromstring( 'F', (im_width, im_height), rawdata,
+                           #        'raw', decoder )
+            im = Image.frombytes('F', (im_width, im_height), rawdata,
+                                  'raw', decoder)
             if self.debug > 0:
                 t2 = time.time()
                 print("| read image data: %.3g s" % (t2-t1))
@@ -746,7 +755,8 @@ class DM3(object):
         if unit == '\xb5m':
             unit = 'micron'
         else:
-            unit = unit.encode('ascii')
+            #unit = unit.encode('ascii')
+            unit = unit
         if self.debug > 0:
             print("pixel size = %s %s" % (pixel_size, unit))
         return (pixel_size, unit)
