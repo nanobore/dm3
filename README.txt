@@ -1,5 +1,3 @@
-THIS IS PROBABLY BROKEN FOR AWHILE--making it Python3 compatible. <nanobore@gmail.com>
-
 #######################
 ## Python DM3 Reader ##
 #######################
@@ -10,6 +8,9 @@ Pierre-Ivan Raynal <raynal@univ-tours.fr>
 
 Contributions by:
 Philippe Mallet-Ladeira <philippe.mallet@cemes.fr>
+
+Python3 port by:
+Nano Bore <nanobore@gmail.com>
 
 This Python module is a transposition and adaptation of the DM3_Reader ImageJ plug-in (http://rsb.info.nih.gov/ij/plugins/DM3_Reader.html) by Greg Jefferis <jefferis@stanford.edu>.
 

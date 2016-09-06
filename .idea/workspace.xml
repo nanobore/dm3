@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2c1cfca6-b32f-48b5-b922-4b00209cd10a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DM3lib.py" afterPath="$PROJECT_DIR$/DM3lib.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DM3lib_2.py" afterPath="$PROJECT_DIR$/DM3lib_2.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/demo.py" afterPath="$PROJECT_DIR$/demo.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.txt" afterPath="$PROJECT_DIR$/README.txt" />
     </list>
     <ignored path="pyDM3reader.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -34,7 +32,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="demo.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="demo.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/demo.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="210">
@@ -42,6 +40,16 @@
               <folding>
                 <element signature="e#19#33#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="README.txt" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="60">
+              <caret line="4" column="8" selection-start-line="4" selection-start-column="8" selection-end-line="4" selection-end-column="8" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -79,12 +87,13 @@
         <option value="$PROJECT_DIR$/t3.py" />
         <option value="$PROJECT_DIR$/DM3lib.py" />
         <option value="$PROJECT_DIR$/demo.py" />
+        <option value="$PROJECT_DIR$/README.txt" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="324" />
-    <option name="y" value="146" />
+    <option name="x" value="152" />
+    <option name="y" value="23" />
     <option name="width" value="1060" />
     <option name="height" value="677" />
   </component>
@@ -317,7 +326,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="324" y="146" width="1060" height="677" extended-state="0" />
+    <frame x="152" y="23" width="1060" height="677" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28873917" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -388,6 +397,14 @@
           <folding>
             <element signature="e#19#33#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="8" selection-start-line="4" selection-start-column="8" selection-end-line="4" selection-end-column="8" />
+          <folding />
         </state>
       </provider>
     </entry>
